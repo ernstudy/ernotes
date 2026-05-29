@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +27,7 @@ export function AuthModal({
   initialMode = "login",
 }: AuthModalProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,7 +35,12 @@ export function AuthModal({
   const [isLoading, setIsLoading] = useState(false);
   const { login, register } = useAuth();
 
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
+
   const resetForm = () => {
+    setName("");
     setEmail("");
     setPassword("");
     setConfirmPassword("");
@@ -43,6 +49,7 @@ export function AuthModal({
 
   const handleModeSwitch = (newMode: AuthMode) => {
     setMode(newMode);
+
     resetForm();
   };
 
@@ -50,13 +57,18 @@ export function AuthModal({
     e.preventDefault();
     setError("");
 
-    if (!email || !password) {
-      setError("Please fill in all fields");
-      return;
+    if (mode === "register") {
+      if (!name || !email || !password) {
+        setError("Please fill in all fields");
+        if (password !== confirmPassword) {
+          setError("Passwords do not match");
+        }
+        return;
+      }
     }
 
-    if (mode === "register" && password !== confirmPassword) {
-      setError("Passwords do not match");
+    if ((mode === "login" && !email) || !password) {
+      setError("Please fill in all fields");
       return;
     }
 
@@ -92,6 +104,22 @@ export function AuthModal({
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+          {mode === "register" && (
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-foreground/80">
+                Name
+              </Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="border-border/50 bg-secondary/50 focus-visible:ring-primary"
+              />
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="email" className="text-foreground/80">
               Email
@@ -133,9 +161,7 @@ export function AuthModal({
               />
             </div>
           )}
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <Button
             type="submit"
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"

@@ -26,6 +26,7 @@ export function LandingPage({ onShowCreateNote }: LandingPageProps) {
 
   const openAuthModal = (mode: "login" | "register", action?: "create") => {
     setAuthMode(mode);
+
     if (action) {
       setPendingAction(action);
     }
@@ -85,7 +86,7 @@ export function LandingPage({ onShowCreateNote }: LandingPageProps) {
           <div className="mt-10">
             <Button
               size="lg"
-              onClick={() => openAuthModal("register", "create")}
+              onClick={() => openAuthModal("login", "create")}
               className="bg-primary px-8 text-primary-foreground hover:bg-primary/90"
             >
               Create Note
