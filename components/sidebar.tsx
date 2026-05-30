@@ -3,14 +3,7 @@
 import { NoteSection } from "@/lib/types";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import {
-  FileText,
-  Plus,
-  Star,
-  Trash2,
-  X,
-  LogOut,
-} from "lucide-react";
+import { FileText, Plus, Star, Trash2, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -60,7 +53,7 @@ export function Sidebar({
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-300 lg:relative lg:translate-x-0",
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+          isMobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* Header */}
@@ -113,7 +106,7 @@ export function Sidebar({
                   "flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm transition-colors",
                   currentSection === item.id
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -128,7 +121,7 @@ export function Sidebar({
           <div className="border-t border-sidebar-border p-3">
             <div className="flex items-center justify-between rounded-lg px-3 py-2">
               <span className="text-sm text-sidebar-foreground/70 truncate">
-                {user.email}
+                {user.name}
               </span>
               <Button
                 variant="ghost"

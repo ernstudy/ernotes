@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
-    // Mock login - simulate API delay
     const data = await loginUser(email, password); // Call the actual login function from lib/api.ts
     console.log(data);
     setUser(data.user);
