@@ -77,7 +77,7 @@ export function AuthModal({
       if (mode === "login") {
         await login(email, password);
       } else {
-        await register(email, password);
+        await register(name, email, password);
       }
       resetForm();
       onClose();

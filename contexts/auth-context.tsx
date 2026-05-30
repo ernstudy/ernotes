@@ -1,17 +1,19 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-
+import { loginUser, registerUser } from "@/lib/api";
 interface User {
   id: string;
+  name: string;
   email: string;
+  isAuthenticated: boolean;
+  accessToken: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -22,14 +24,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     // Mock login - simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setUser({ id: "1", email });
+    const data = await loginUser(email, password); // Call the actual login function from lib/api.ts
+    console.log(data);
+    setUser(data.user);
   };
 
-  const register = async (email: string, password: string) => {
-    // Mock register - simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setUser({ id: "1", email });
+  const register = async (name: string, email: string, password: string) => {
+    const data = await registerUser(name, email, password);
+    setUser(data.user);
+    console.log(user);
   };
 
   const logout = () => {
@@ -40,7 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
         login,
         register,
         logout,
