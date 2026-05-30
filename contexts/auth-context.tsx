@@ -7,14 +7,14 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { loginUser, logoutUser, registerUser } from "@/lib/api";
+import { getUser, loginUser, logoutUser, registerUser } from "@/lib/api";
 
 interface User {
   id: string;
   name: string;
   email: string;
   isAuthenticated: boolean;
-  accessToken: string;
+  accessToken?: string;
 }
 
 interface AuthContextType {
@@ -22,12 +22,32 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const token = sessionStorage.getItem("accessToken");
+
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
+      const data = await getUser(token);
+
+      setUser(data.user);
+      setLoading(false);
+    };
+
+    loadUser();
+  }, []);
 
   const login = async (email: string, password: string) => {
     const data = await loginUser(email, password);
@@ -49,7 +69,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("No access token");
     }
 
-    const data = await logoutUser(token);
+    await logoutUser(token);
+
+    sessionStorage.removeItem("accessToken");
 
     setUser(null);
   };
@@ -57,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
+        loading,
         user,
         login,
         register,

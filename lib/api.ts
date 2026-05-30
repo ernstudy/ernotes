@@ -60,3 +60,18 @@ export async function logoutUser(token: string) {
 
   return response.json() || null;
 }
+
+export async function getUser(token: string) {
+  const response = await fetch(`${API_BASE_URL}/profiles/me`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get user");
+  }
+
+  return response.json();
+}

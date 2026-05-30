@@ -6,12 +6,14 @@ import { NotesLayout } from "@/components/notes-layout";
 import { LandingPage } from "@/components/landing-page";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [showCreateOnMount, setShowCreateOnMount] = useState(false);
 
   const handleShowCreateNote = useCallback(() => {
     setShowCreateOnMount(true);
   }, []);
+
+  if (loading) return null;
 
   if (!user?.isAuthenticated) {
     return <LandingPage onShowCreateNote={handleShowCreateNote} />;
