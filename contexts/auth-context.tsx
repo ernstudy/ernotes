@@ -1,7 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import { loginUser, registerUser } from "@/lib/api";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
+import { loginUser, logoutUser, registerUser } from "@/lib/api";
+
 interface User {
   id: string;
   name: string;
@@ -23,18 +30,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
-    const data = await loginUser(email, password); // Call the actual login function from lib/api.ts
-    console.log(data);
+    const data = await loginUser(email, password);
     setUser(data.user);
+    sessionStorage.setItem("accessToken", data?.user.accessToken);
   };
 
   const register = async (name: string, email: string, password: string) => {
     const data = await registerUser(name, email, password);
     setUser(data.user);
-    console.log(user);
+    console.log(data.user.access);
+    sessionStorage.setItem("accessToken", data?.user.accessToken);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const token = sessionStorage.getItem("accessToken");
+
+    if (!token) {
+      throw new Error("No access token");
+    }
+
+    const data = await logoutUser(token);
+
     setUser(null);
   };
 

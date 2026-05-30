@@ -1,3 +1,5 @@
+import { useAuth } from "@/contexts/auth-context";
+
 const API_BASE_URL = "https://ernotes-api.onrender.com/api/v1";
 
 //
@@ -42,4 +44,19 @@ export async function loginUser(email: string, password: string) {
 
   const data = await response.json();
   return data;
+}
+
+export async function logoutUser(token: string) {
+  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to logout");
+  }
+
+  return response.json() || null;
 }
