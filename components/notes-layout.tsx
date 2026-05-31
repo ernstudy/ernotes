@@ -8,8 +8,9 @@ import { NoteEditor } from "./note-editor";
 import { NoteReader } from "./note-reader";
 import { NotesGrid } from "./notes-grid";
 import { CreateNoteForm } from "./create-note-form";
+import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Plus } from "lucide-react";
 
 interface NotesLayoutProps {
   initialViewMode?: ViewMode;
@@ -151,6 +152,20 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
             />
           ) : (
             <div className="h-full overflow-auto px-6 py-8 lg:px-8">
+              {currentSection === "home" && (
+                <div className="mb-6 flex items-center justify-between gap-4 lg:hidden">
+                  <div className="flex-1 min-w-0">
+                    <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                  </div>
+                  <Button
+                    onClick={showCreateForm}
+                    className="shrink-0 gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    <Plus className="h-4 w-4" />
+                    New Note
+                  </Button>
+                </div>
+              )}
               <NotesGrid
                 notes={displayNotes}
                 title={getSectionTitle()}
