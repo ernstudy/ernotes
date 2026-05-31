@@ -10,7 +10,7 @@ import { NotesGrid } from "./notes-grid";
 import { CreateNoteForm } from "./create-note-form";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus, Folder, ArrowLeft, ArrowRight, Filter } from "lucide-react";
+import { Menu, Plus, Folder, ArrowLeft, ArrowRight, Filter, FileText } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -175,19 +175,20 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
         <div className="flex items-center border-b border-border/50 px-4 py-3 lg:hidden">
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => setIsMobileSidebarOpen(true)}
             className="mr-2"
           >
-            <Menu className="h-5 w-5" />
+            <Menu size="sm" />
           </Button>
-          <span className="font-medium">
-            {(viewMode === "editor" || viewMode === "read") && selectedNote
-              ? selectedNote.title || "Untitled"
-              : viewMode === "create"
-              ? "Create Note"
-              : getSectionTitle()}
-          </span>
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <FileText className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-semibold text-foreground">
+              Ernote
+            </span>
+          </div>
         </div>
 
         {/* Content */}
