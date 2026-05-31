@@ -6,6 +6,12 @@ type Note = {
   category: string;
 };
 
+type NoteToTrash = {
+  deleted_at: Date;
+  is_archived: boolean;
+  updated_at: Date;
+};
+
 export const getNotes = async (token: string) => {
   const response = await fetch(`${apiBaseUrl}/notes`, {
     method: "GET",
@@ -30,6 +36,30 @@ export const createNewNote = async (token: string, note: Note) => {
     },
 
     body: JSON.stringify(note),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create Note");
+  }
+
+  const data = await response.json();
+
+  return data;
+};
+
+export const moveNoteToTrashApi = async (
+  token: string,
+  noteToTrash: NoteToTrash,
+  noteId: string,
+) => {
+  const response = await fetch(`${apiBaseUrl}/notes/${noteId}/trash`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify(noteToTrash),
   });
 
   if (!response.ok) {

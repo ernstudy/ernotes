@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const loadUser = async () => {
       const token = sessionStorage.getItem("accessToken");
 
-      if (!token) {
+      if (!token || token == undefined) {
         setUser(null);
         setLoading(false);
         return;

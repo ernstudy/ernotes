@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Note, NoteSection, ViewMode } from "@/lib/types";
 import { mockNotes, mockCategories } from "@/lib/mock-data";
-import { createNewNote, getNotes } from "@/lib/notes-api";
+import { createNewNote, getNotes, moveNoteToTrashApi } from "@/lib/notes-api";
 import { getAccessToken } from "@/helpers/acess-token";
 
 export function useNotes() {
@@ -14,6 +14,12 @@ export function useNotes() {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  type TrashNoteData = {
+    deleted_at: Date;
+    is_archived: boolean;
+    updated_at: Date;
+  };
 
   const renderNotes = async () => {
     const token = getAccessToken();
@@ -35,14 +41,14 @@ export function useNotes() {
     switch (currentSection) {
       case "favorites":
         filtered = filtered.filter(
-          (note) => note.isFavorite && !note.isDeleted,
+          (note) => note.is_favorite && !note.is_archived,
         );
         break;
       case "trash":
-        filtered = filtered.filter((note) => note.isDeleted);
+        filtered = filtered.filter((note) => note.is_archived);
         break;
       default:
-        filtered = filtered.filter((note) => !note.isDeleted);
+        filtered = filtered.filter((note) => !note.is_archived);
     }
 
     // Filter by search query
@@ -59,7 +65,7 @@ export function useNotes() {
     // Sort by updatedAt (most recent first)
     return filtered.sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
     );
   }, [notes, currentSection, searchQuery]);
 
@@ -103,20 +109,17 @@ export function useNotes() {
     [categories],
   );
 
-  const deleteNote = useCallback(
-    (id: string) => {
-      setNotes((prev) =>
-        prev.map((note) =>
-          note.id === id ? { ...note, isDeleted: true } : note,
-        ),
-      );
-      if (selectedNoteId === id) {
-        setSelectedNoteId(null);
-        setViewMode("list");
-      }
-    },
-    [selectedNoteId],
-  );
+  const deleteNote = async (noteId: string) => {
+    const token = getAccessToken();
+
+    const noteToTrash: TrashNoteData = {
+      deleted_at: new Date(),
+      is_archived: true,
+      updated_at: new Date(),
+    };
+    const deletedNote = await moveNoteToTrashApi(token, noteToTrash, noteId);
+    renderNotes();
+  };
 
   const restoreNote = useCallback((id: string) => {
     setNotes((prev) =>
@@ -140,7 +143,7 @@ export function useNotes() {
   const toggleFavorite = useCallback((id: string) => {
     setNotes((prev) =>
       prev.map((note) =>
-        note.id === id ? { ...note, isFavorite: !note.isFavorite } : note,
+        note.id === id ? { ...note, isFavorite: !note.is_favorite } : note,
       ),
     );
   }, []);
