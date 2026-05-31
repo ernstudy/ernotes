@@ -95,7 +95,7 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
     }
   };
 
-  const displayNotes = currentSection === "home" ? recentNotes : notes;
+  const displayNotes = currentSection === "home" ? recentNotes.slice(0, 4) : notes;
 
   const categoryStats = useMemo(() => {
     const stats: Record<string, number> = {};
@@ -207,6 +207,19 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                   emptyMessage={getSectionEmptyMessage()}
                   isTrash={currentSection === "trash"}
                   isLoading={isLoading}
+                  headerAction={
+                    currentSection === "home" ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentSection("all")}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        View All
+                        <ArrowRight className="ml-1 h-4 w-4" />
+                      </Button>
+                    ) : undefined
+                  }
                   onRead={selectNoteForReading}
                   onEdit={selectNoteForEditing}
                   onToggleFavorite={toggleFavorite}

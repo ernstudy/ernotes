@@ -1,5 +1,6 @@
 "use client";
 
+import { ReactNode } from "react";
 import { Note } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,7 @@ interface NotesGridProps {
   emptyMessage: string;
   isTrash?: boolean;
   isLoading?: boolean;
+  headerAction?: ReactNode;
   onRead: (id: string) => void;
   onEdit: (id: string) => void;
   onToggleFavorite: (id: string) => void;
@@ -41,6 +43,7 @@ export function NotesGrid({
   emptyMessage,
   isTrash = false,
   isLoading,
+  headerAction,
   onRead,
   onEdit,
   onToggleFavorite,
@@ -83,9 +86,12 @@ export function NotesGrid({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-foreground">{title}</h2>
-        <span className="text-sm text-muted-foreground">
-          {notes.length} {notes.length === 1 ? "note" : "notes"}
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">
+            {notes.length} {notes.length === 1 ? "note" : "notes"}
+          </span>
+          {headerAction}
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
