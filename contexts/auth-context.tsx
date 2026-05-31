@@ -7,7 +7,7 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { getUser, loginUser, logoutUser, registerUser } from "@/lib/api";
+import { getUser, loginUser, logoutUser, registerUser } from "@/lib/auth-api";
 
 interface User {
   id: string;
@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!token) {
         setUser(null);
+        setLoading(false);
         return;
       }
 

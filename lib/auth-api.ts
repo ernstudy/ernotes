@@ -1,6 +1,4 @@
-import { useAuth } from "@/contexts/auth-context";
-
-const API_BASE_URL = "https://ernotes-api.onrender.com/api/v1";
+const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 //
 export async function registerUser(
@@ -10,7 +8,7 @@ export async function registerUser(
 ) {
   const bodyData = { name, email, password };
 
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+  const response = await fetch(`${apiUrl}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +28,7 @@ export async function registerUser(
 
 //
 export async function loginUser(email: string, password: string) {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+  const response = await fetch(`${apiUrl}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -47,7 +45,7 @@ export async function loginUser(email: string, password: string) {
 }
 
 export async function logoutUser(token: string) {
-  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+  const response = await fetch(`${apiUrl}/auth/logout`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -62,7 +60,7 @@ export async function logoutUser(token: string) {
 }
 
 export async function getUser(token: string) {
-  const response = await fetch(`${API_BASE_URL}/profiles/me`, {
+  const response = await fetch(`${apiUrl}/profiles/me`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,

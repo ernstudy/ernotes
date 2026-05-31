@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Note, NoteSection, ViewMode } from "@/lib/types";
 import { mockNotes, mockCategories } from "@/lib/mock-data";
+import { createNewNote, getNotes } from "@/lib/notes-api";
+import { getAccessToken } from "@/helpers/acess-token";
 
 export function useNotes() {
-  const [notes, setNotes] = useState<Note[]>(mockNotes);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [categories, setCategories] = useState<string[]>(mockCategories);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [currentSection, setCurrentSection] = useState<NoteSection>("all");
@@ -13,13 +15,28 @@ export function useNotes() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const renderNotes = async () => {
+    const token = getAccessToken();
+    const res = await getNotes(token);
+    const allNotes = await res.notes;
+    console.log(allNotes);
+
+    setNotes(allNotes);
+  };
+
+  useEffect(() => {
+    renderNotes();
+  }, []);
+
   const filteredNotes = useMemo(() => {
     let filtered = notes;
 
     // Filter by section
     switch (currentSection) {
       case "favorites":
-        filtered = filtered.filter((note) => note.isFavorite && !note.isDeleted);
+        filtered = filtered.filter(
+          (note) => note.isFavorite && !note.isDeleted,
+        );
         break;
       case "trash":
         filtered = filtered.filter((note) => note.isDeleted);
@@ -35,13 +52,14 @@ export function useNotes() {
         (note) =>
           note.title.toLowerCase().includes(query) ||
           note.content.toLowerCase().includes(query) ||
-          note.category.toLowerCase().includes(query)
+          note.category.toLowerCase().includes(query),
       );
     }
 
     // Sort by updatedAt (most recent first)
     return filtered.sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
   }, [notes, currentSection, searchQuery]);
 
@@ -51,78 +69,79 @@ export function useNotes() {
 
   const selectedNote = useMemo(
     () => notes.find((note) => note.id === selectedNoteId) || null,
-    [notes, selectedNoteId]
+    [notes, selectedNoteId],
   );
 
-  const createNote = useCallback((noteData: { title: string; content: string; category: string }) => {
-    const newNote: Note = {
-      id: Date.now().toString(),
-      title: noteData.title,
-      content: noteData.content,
-      category: noteData.category,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isFavorite: false,
-      isDeleted: false,
-    };
+  const createNote = async (data: {
+    title: string;
+    content: string;
+    category: string;
+  }) => {
+    // const noteData = { title, content, category };
+    const token = getAccessToken();
 
-    // Add new category if it doesn't exist
-    if (noteData.category && !categories.includes(noteData.category)) {
-      setCategories((prev) => [...prev, noteData.category]);
-    }
+    const res = await createNewNote(token, data);
+    console.log("note created", res);
+    renderNotes();
+  };
 
-    setNotes((prev) => [newNote, ...prev]);
-    return newNote;
-  }, [categories]);
+  const updateNote = useCallback(
+    (id: string, updates: Partial<Note>) => {
+      setNotes((prev) =>
+        prev.map((note) =>
+          note.id === id
+            ? { ...note, ...updates, updatedAt: new Date() }
+            : note,
+        ),
+      );
 
-  const updateNote = useCallback((id: string, updates: Partial<Note>) => {
-    setNotes((prev) =>
-      prev.map((note) =>
-        note.id === id
-          ? { ...note, ...updates, updatedAt: new Date() }
-          : note
-      )
-    );
+      // Add new category if it doesn't exist
+      if (updates.category && !categories.includes(updates.category)) {
+        setCategories((prev) => [...prev, updates.category!]);
+      }
+    },
+    [categories],
+  );
 
-    // Add new category if it doesn't exist
-    if (updates.category && !categories.includes(updates.category)) {
-      setCategories((prev) => [...prev, updates.category!]);
-    }
-  }, [categories]);
-
-  const deleteNote = useCallback((id: string) => {
-    setNotes((prev) =>
-      prev.map((note) =>
-        note.id === id ? { ...note, isDeleted: true } : note
-      )
-    );
-    if (selectedNoteId === id) {
-      setSelectedNoteId(null);
-      setViewMode("list");
-    }
-  }, [selectedNoteId]);
+  const deleteNote = useCallback(
+    (id: string) => {
+      setNotes((prev) =>
+        prev.map((note) =>
+          note.id === id ? { ...note, isDeleted: true } : note,
+        ),
+      );
+      if (selectedNoteId === id) {
+        setSelectedNoteId(null);
+        setViewMode("list");
+      }
+    },
+    [selectedNoteId],
+  );
 
   const restoreNote = useCallback((id: string) => {
     setNotes((prev) =>
       prev.map((note) =>
-        note.id === id ? { ...note, isDeleted: false } : note
-      )
+        note.id === id ? { ...note, isDeleted: false } : note,
+      ),
     );
   }, []);
 
-  const permanentlyDeleteNote = useCallback((id: string) => {
-    setNotes((prev) => prev.filter((note) => note.id !== id));
-    if (selectedNoteId === id) {
-      setSelectedNoteId(null);
-      setViewMode("list");
-    }
-  }, [selectedNoteId]);
+  const permanentlyDeleteNote = useCallback(
+    (id: string) => {
+      setNotes((prev) => prev.filter((note) => note.id !== id));
+      if (selectedNoteId === id) {
+        setSelectedNoteId(null);
+        setViewMode("list");
+      }
+    },
+    [selectedNoteId],
+  );
 
   const toggleFavorite = useCallback((id: string) => {
     setNotes((prev) =>
       prev.map((note) =>
-        note.id === id ? { ...note, isFavorite: !note.isFavorite } : note
-      )
+        note.id === id ? { ...note, isFavorite: !note.isFavorite } : note,
+      ),
     );
   }, []);
 
