@@ -10,7 +10,7 @@ export function useNotes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [categories, setCategories] = useState<string[]>(mockCategories);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
-  const [currentSection, setCurrentSection] = useState<NoteSection>("all");
+  const [currentSection, setCurrentSection] = useState<NoteSection>("home");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);

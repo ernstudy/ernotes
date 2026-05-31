@@ -61,6 +61,10 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
 
   const getSectionTitle = () => {
     switch (currentSection) {
+      case "home":
+        return "Recent Notes";
+      case "all":
+        return "All Notes";
       case "favorites":
         return "Favorites";
       case "trash":
@@ -81,7 +85,7 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
     }
   };
 
-  const displayNotes = currentSection === "all" ? recentNotes : notes;
+  const displayNotes = currentSection === "home" ? recentNotes : notes;
 
   return (
     <div className="flex h-screen bg-background">
