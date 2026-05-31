@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useAuth } from "@/contexts/auth-context";
 import { useNotes } from "@/hooks/use-notes";
 import { ViewMode } from "@/lib/types";
 import { Sidebar } from "./sidebar";
@@ -63,6 +64,8 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
     showDashboard,
     setViewMode,
   } = useNotes();
+
+  const { user } = useAuth();
 
   // Set initial view mode on mount
   useEffect(() => {
@@ -221,6 +224,14 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
             />
           ) : (
             <div className="h-full overflow-auto px-6 py-8 lg:px-8">
+              {currentSection === "home" && user && (
+                <div className="mb-6">
+                  <p className="text-lg  font-light text-muted-foreground">
+                    Welcome back,{" "}
+                    {user?.name?.split(" ")[0]?.charAt(0).toUpperCase() + user?.name?.slice(1)}
+                  </p>
+                </div>
+              )}
               {currentSection === "all" && (
                 <div className="mb-6 flex items-center justify-between gap-4 lg:hidden">
                   <div className="flex-1 min-w-0">

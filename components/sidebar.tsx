@@ -123,7 +123,7 @@ export function Sidebar({
           <div className="border-t border-sidebar-border p-3">
             <div className="flex items-center justify-between rounded-lg px-3 py-2">
               <span className="text-sm text-sidebar-foreground/70 truncate">
-                {user.name}
+                {user.email}
               </span>
               <Button
                 variant="ghost"
