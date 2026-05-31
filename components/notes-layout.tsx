@@ -10,7 +10,7 @@ import { NotesGrid } from "./notes-grid";
 import { CreateNoteForm } from "./create-note-form";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus, Folder, ArrowLeft } from "lucide-react";
+import { Menu, Plus, Folder, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface NotesLayoutProps {
   initialViewMode?: ViewMode;
@@ -52,7 +52,7 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
   }, []);
 
   useEffect(() => {
-    if (currentSection !== "home") {
+    if (currentSection !== "home" && currentSection !== "categories") {
       setSelectedCategory(null);
     }
   }, [currentSection]);
@@ -71,6 +71,8 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
     switch (currentSection) {
       case "home":
         return "Recent Notes";
+      case "categories":
+        return "Categories";
       case "all":
         return "All Notes";
       case "favorites":
@@ -198,25 +200,42 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                   </Button>
                 </div>
               )}
-              <NotesGrid
-                notes={displayNotes}
-                title={getSectionTitle()}
-                emptyMessage={getSectionEmptyMessage()}
-                isTrash={currentSection === "trash"}
-                isLoading={isLoading}
-                onRead={selectNoteForReading}
-                onEdit={selectNoteForEditing}
-                onToggleFavorite={toggleFavorite}
-                onDelete={deleteNote}
-                onRestore={restoreNote}
-                onPermanentlyDelete={permanentlyDeleteNote}
-              />
+              {currentSection !== "categories" && (
+                <NotesGrid
+                  notes={displayNotes}
+                  title={getSectionTitle()}
+                  emptyMessage={getSectionEmptyMessage()}
+                  isTrash={currentSection === "trash"}
+                  isLoading={isLoading}
+                  onRead={selectNoteForReading}
+                  onEdit={selectNoteForEditing}
+                  onToggleFavorite={toggleFavorite}
+                  onDelete={deleteNote}
+                  onRestore={restoreNote}
+                  onPermanentlyDelete={permanentlyDeleteNote}
+                />
+              )}
 
-              {currentSection === "home" && (
-                <div className="mt-12 space-y-6">
-                  <h2 className="text-xl font-semibold text-foreground">Categories</h2>
+              {(currentSection === "home" || currentSection === "categories") && (
+                <div className={currentSection === "home" ? "mt-12 space-y-6" : "space-y-6"}>
+                  {currentSection === "home" ? (
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold text-foreground">Categories</h2>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentSection("categories")}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        View All
+                        <ArrowRight className="ml-1 h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : currentSection === "categories" && !selectedCategory ? (
+                    <h2 className="text-xl font-semibold text-foreground">Categories</h2>
+                  ) : null}
                   
-                  {selectedCategory ? (
+                  {selectedCategory && currentSection === "categories" ? (
                     <div className="space-y-6">
                       <Button 
                         variant="ghost" 
@@ -243,10 +262,13 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                     </div>
                   ) : (
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                      {categoryStats.map((cat) => (
+                      {(currentSection === "home" ? categoryStats.slice(0, 4) : categoryStats).map((cat) => (
                         <button
                           key={cat.name}
-                          onClick={() => setSelectedCategory(cat.name)}
+                          onClick={() => {
+                            setCurrentSection("categories");
+                            setSelectedCategory(cat.name);
+                          }}
                           className="group flex flex-col items-start rounded-xl border border-border/50 bg-card p-5 text-left transition-all duration-200 hover:border-border hover:shadow-lg hover:shadow-black/5"
                         >
                           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">

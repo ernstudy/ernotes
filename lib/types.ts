@@ -13,5 +13,5 @@ export interface Note {
   updated_at: Date;
 }
 
-export type NoteSection = "home" | "all" | "favorites" | "trash";
+export type NoteSection = "home" | "all" | "categories" | "favorites" | "trash";
 export type ViewMode = "list" | "editor" | "create" | "read";

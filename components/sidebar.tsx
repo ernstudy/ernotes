@@ -3,7 +3,7 @@
 import { NoteSection } from "@/lib/types";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import { FileText, Plus, Star, Trash2, X, LogOut, Home } from "lucide-react";
+import { FileText, Plus, Star, Trash2, X, LogOut, Home, Folder } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -31,6 +31,7 @@ export function Sidebar({
   const sectionItems = [
     { id: "home" as NoteSection, label: "Home", icon: Home },
     { id: "all" as NoteSection, label: "All Notes", icon: FileText },
+    { id: "categories" as NoteSection, label: "Categories", icon: Folder },
     { id: "favorites" as NoteSection, label: "Favorites", icon: Star },
     { id: "trash" as NoteSection, label: "Trash", icon: Trash2 },
   ];
