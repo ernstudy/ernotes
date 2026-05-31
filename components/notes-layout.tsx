@@ -33,11 +33,9 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [allNotesFilter, setAllNotesFilter] = useState<{
-    category: string | null;
     favoritesOnly: boolean;
     sortOrder: "desc" | "asc";
   }>({
-    category: null,
     favoritesOnly: false,
     sortOrder: "desc",
   });
@@ -142,9 +140,6 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
     if (allNotesFilter.favoritesOnly) {
       filtered = filtered.filter((n) => n.is_favorite);
     }
-    if (allNotesFilter.category) {
-      filtered = filtered.filter((n) => n.category === allNotesFilter.category);
-    }
     if (allNotesFilter.sortOrder === "asc") {
       filtered = [...filtered].reverse();
     }
@@ -226,66 +221,10 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
           ) : (
             <div className="h-full overflow-auto px-6 py-8 lg:px-8">
               {currentSection === "all" && (
-                <div className="mb-6 flex items-center gap-4">
+                <div className="mb-6 flex items-center justify-between gap-4 lg:hidden">
                   <div className="flex-1 min-w-0">
                     <SearchBar value={searchQuery} onChange={setSearchQuery} />
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="shrink-0 gap-2">
-                        <Filter className="h-4 w-4" />
-                        Filter
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuCheckboxItem
-                        checked={allNotesFilter.favoritesOnly}
-                        onCheckedChange={(checked) =>
-                          setAllNotesFilter((p) => ({ ...p, favoritesOnly: !!checked }))
-                        }
-                      >
-                        Favorites Only
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>Categories</DropdownMenuSubTrigger>
-                        <DropdownMenuSubContent>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              setAllNotesFilter((p) => ({ ...p, category: null }))
-                            }
-                          >
-                            All Categories
-                          </DropdownMenuItem>
-                          {categoryStats.map((cat) => (
-                            <DropdownMenuCheckboxItem
-                              key={cat.name}
-                              checked={allNotesFilter.category === cat.name}
-                              onCheckedChange={() =>
-                                setAllNotesFilter((p) => ({ ...p, category: cat.name }))
-                              }
-                            >
-                              {cat.name}
-                            </DropdownMenuCheckboxItem>
-                          ))}
-                        </DropdownMenuSubContent>
-                      </DropdownMenuSub>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuRadioGroup
-                        value={allNotesFilter.sortOrder}
-                        onValueChange={(val) =>
-                          setAllNotesFilter((p) => ({ ...p, sortOrder: val as "asc" | "desc" }))
-                        }
-                      >
-                        <DropdownMenuRadioItem value="desc">
-                          Most Recent
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="asc">
-                          Oldest First
-                        </DropdownMenuRadioItem>
-                      </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                   <Button
                     onClick={showCreateForm}
                     className="shrink-0 gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
@@ -313,6 +252,39 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                         View All
                         <ArrowRight className="ml-1 h-4 w-4" />
                       </Button>
+                    ) : currentSection === "all" ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="gap-2">
+                            <Filter className="h-4 w-4" />
+                            Filter
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuCheckboxItem
+                            checked={allNotesFilter.favoritesOnly}
+                            onCheckedChange={(checked) =>
+                              setAllNotesFilter((p) => ({ ...p, favoritesOnly: !!checked }))
+                            }
+                          >
+                            Favorites Only
+                          </DropdownMenuCheckboxItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuRadioGroup
+                            value={allNotesFilter.sortOrder}
+                            onValueChange={(val) =>
+                              setAllNotesFilter((p) => ({ ...p, sortOrder: val as "asc" | "desc" }))
+                            }
+                          >
+                            <DropdownMenuRadioItem value="desc">
+                              Most Recent
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="asc">
+                              Oldest First
+                            </DropdownMenuRadioItem>
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     ) : undefined
                   }
                   onRead={selectNoteForReading}
