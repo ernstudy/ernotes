@@ -26,6 +26,7 @@ interface NotesGridProps {
   notes: Note[];
   title: string;
   emptyMessage: string;
+  emptyAction?: ReactNode;
   isTrash?: boolean;
   isLoading?: boolean;
   headerAction?: ReactNode;
@@ -41,6 +42,7 @@ export function NotesGrid({
   notes,
   title,
   emptyMessage,
+  emptyAction,
   isTrash = false,
   isLoading,
   headerAction,
@@ -77,6 +79,7 @@ export function NotesGrid({
         <h2 className="text-xl font-semibold text-foreground">{title}</h2>
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/50 bg-card/30 py-16 text-center">
           <p className="text-muted-foreground">{emptyMessage}</p>
+          {emptyAction && <div className="mt-4">{emptyAction}</div>}
         </div>
       </div>
     );
@@ -138,7 +141,7 @@ function NoteCard({
     <div
       className={cn(
         "group relative flex flex-col rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:border-border hover:shadow-lg hover:shadow-black/5",
-        isTrash && "opacity-70"
+        isTrash && "opacity-70",
       )}
     >
       {/* Header */}
@@ -148,16 +151,13 @@ function NoteCard({
             {note.title || "Untitled"}
           </h3>
           {note.category && (
-            <Badge
-              variant="secondary"
-              className="mt-1.5 text-xs font-normal"
-            >
+            <Badge variant="secondary" className="mt-1.5 text-xs font-normal">
               {note.category}
             </Badge>
           )}
         </div>
         <div className="flex items-center gap-1">
-          {note.isFavorite && !isTrash && (
+          {note.is_favorite && !isTrash && (
             <Star className="h-4 w-4 fill-primary text-primary" />
           )}
           <DropdownMenu>
@@ -197,8 +197,13 @@ function NoteCard({
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onToggleFavorite(note.id)}>
-                    <Star className={cn("mr-2 h-4 w-4", note.isFavorite && "fill-current")} />
-                    {note.isFavorite ? "Remove Favorite" : "Add to Favorite"}
+                    <Star
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        note.is_favorite && "fill-current",
+                      )}
+                    />
+                    {note.is_favorite ? "Remove Favorite" : "Add to Favorite"}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -223,7 +228,7 @@ function NoteCard({
       {/* Footer */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground/70">
-          {formatDate(note.updatedAt)}
+          {formatDate(note.updated_at)}
         </span>
         {!isTrash && (
           <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">

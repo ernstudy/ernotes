@@ -11,7 +11,15 @@ import { NotesGrid } from "./notes-grid";
 import { CreateNoteForm } from "./create-note-form";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus, Folder, ArrowLeft, ArrowRight, Filter, FileText } from "lucide-react";
+import {
+  Menu,
+  Plus,
+  Folder,
+  ArrowLeft,
+  ArrowRight,
+  Filter,
+  FileText,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,7 +88,11 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
     }
   }, [currentSection]);
 
-  const handleCreateNote = (data: { title: string; content: string; category: string }) => {
+  const handleCreateNote = (data: {
+    title: string;
+    content: string;
+    category: string;
+  }) => {
     createNote(data);
     showDashboard();
   };
@@ -150,9 +162,11 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
   }, [notes, allNotesFilter]);
 
   const displayNotes =
-    currentSection === "home" ? recentNotes.slice(0, 4) :
-    currentSection === "all" ? allNotesFiltered :
-    notes;
+    currentSection === "home"
+      ? recentNotes.slice(0, 4)
+      : currentSection === "all"
+        ? allNotesFiltered
+        : notes;
 
   const categoryNotes = useMemo(() => {
     if (!selectedCategory) return [];
@@ -228,7 +242,8 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                 <div className="mb-6">
                   <p className="text-lg  font-light text-muted-foreground">
                     Welcome back,{" "}
-                    {user?.name?.split(" ")[0]?.charAt(0).toUpperCase() + user?.name?.slice(1)}
+                    {user?.name?.split(" ")[0]?.charAt(0).toUpperCase() +
+                      user?.name?.slice(1)}
                   </p>
                 </div>
               )}
@@ -251,6 +266,18 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                   notes={displayNotes}
                   title={getSectionTitle()}
                   emptyMessage={getSectionEmptyMessage()}
+                  emptyAction={
+                    currentSection === "home" ? (
+                      <Button
+                        size="lg"
+                        className="gap-2"
+                        onClick={showCreateForm}
+                      >
+                        <Plus className="h-5 w-5" />
+                        Create Note
+                      </Button>
+                    ) : undefined
+                  }
                   isTrash={currentSection === "trash"}
                   isLoading={isLoading}
                   headerAction={
@@ -276,7 +303,10 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                           <DropdownMenuCheckboxItem
                             checked={allNotesFilter.favoritesOnly}
                             onCheckedChange={(checked) =>
-                              setAllNotesFilter((p) => ({ ...p, favoritesOnly: !!checked }))
+                              setAllNotesFilter((p) => ({
+                                ...p,
+                                favoritesOnly: !!checked,
+                              }))
                             }
                           >
                             Favorites Only
@@ -285,7 +315,10 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                           <DropdownMenuRadioGroup
                             value={allNotesFilter.sortOrder}
                             onValueChange={(val) =>
-                              setAllNotesFilter((p) => ({ ...p, sortOrder: val as "asc" | "desc" }))
+                              setAllNotesFilter((p) => ({
+                                ...p,
+                                sortOrder: val as "asc" | "desc",
+                              }))
                             }
                           >
                             <DropdownMenuRadioItem value="desc">
@@ -308,11 +341,18 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                 />
               )}
 
-              {(currentSection === "home" || currentSection === "categories") && (
-                <div className={currentSection === "home" ? "mt-12 space-y-6" : "space-y-6"}>
+              {(currentSection === "home" ||
+                currentSection === "categories") && (
+                <div
+                  className={
+                    currentSection === "home" ? "mt-12 space-y-6" : "space-y-6"
+                  }
+                >
                   {currentSection === "home" ? (
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold text-foreground">Categories</h2>
+                      <h2 className="text-xl font-semibold text-foreground">
+                        Categories
+                      </h2>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -324,20 +364,22 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                       </Button>
                     </div>
                   ) : currentSection === "categories" && !selectedCategory ? (
-                    <h2 className="text-xl font-semibold text-foreground">Categories</h2>
+                    <h2 className="text-xl font-semibold text-foreground">
+                      Categories
+                    </h2>
                   ) : null}
-                  
+
                   {selectedCategory && currentSection === "categories" ? (
                     <div className="space-y-6">
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         onClick={() => setSelectedCategory(null)}
                         className="-ml-4 text-muted-foreground hover:text-foreground"
                       >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Categories
                       </Button>
-                      
+
                       <NotesGrid
                         notes={categoryNotes}
                         title={selectedCategory}
@@ -354,7 +396,10 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                     </div>
                   ) : (
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                      {(currentSection === "home" ? categoryStats.slice(0, 4) : categoryStats).map((cat) => (
+                      {(currentSection === "home"
+                        ? categoryStats.slice(0, 4)
+                        : categoryStats
+                      ).map((cat) => (
                         <button
                           key={cat.name}
                           onClick={() => {
