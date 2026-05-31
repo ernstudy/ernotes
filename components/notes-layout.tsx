@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNotes } from "@/hooks/use-notes";
 import { ViewMode } from "@/lib/types";
 import { Sidebar } from "./sidebar";
@@ -10,7 +10,7 @@ import { NotesGrid } from "./notes-grid";
 import { CreateNoteForm } from "./create-note-form";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus } from "lucide-react";
+import { Menu, Plus, Folder, ArrowLeft } from "lucide-react";
 
 interface NotesLayoutProps {
   initialViewMode?: ViewMode;
@@ -18,6 +18,7 @@ interface NotesLayoutProps {
 
 export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const {
     notes,
@@ -49,6 +50,12 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
       setViewMode(initialViewMode);
     }
   }, []);
+
+  useEffect(() => {
+    if (currentSection !== "home") {
+      setSelectedCategory(null);
+    }
+  }, [currentSection]);
 
   const handleCreateNote = (data: { title: string; content: string; category: string }) => {
     createNote(data);
@@ -87,6 +94,31 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
   };
 
   const displayNotes = currentSection === "home" ? recentNotes : notes;
+
+  const categoryStats = useMemo(() => {
+    const stats: Record<string, number> = {};
+    categories.forEach((c) => {
+      if (c) stats[c] = 0;
+    });
+
+    notes.forEach((note) => {
+      if (note.category) {
+        if (stats[note.category] === undefined) {
+          stats[note.category] = 0;
+        }
+        stats[note.category]++;
+      }
+    });
+
+    return Object.entries(stats)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [categories, notes]);
+
+  const categoryNotes = useMemo(() => {
+    if (!selectedCategory) return [];
+    return notes.filter((n) => n.category === selectedCategory);
+  }, [notes, selectedCategory]);
 
   return (
     <div className="flex h-screen bg-background">
@@ -179,6 +211,59 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
                 onRestore={restoreNote}
                 onPermanentlyDelete={permanentlyDeleteNote}
               />
+
+              {currentSection === "home" && (
+                <div className="mt-12 space-y-6">
+                  <h2 className="text-xl font-semibold text-foreground">Categories</h2>
+                  
+                  {selectedCategory ? (
+                    <div className="space-y-6">
+                      <Button 
+                        variant="ghost" 
+                        onClick={() => setSelectedCategory(null)}
+                        className="-ml-4 text-muted-foreground hover:text-foreground"
+                      >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Categories
+                      </Button>
+                      
+                      <NotesGrid
+                        notes={categoryNotes}
+                        title={selectedCategory}
+                        emptyMessage={`No notes in ${selectedCategory}.`}
+                        isTrash={false}
+                        isLoading={isLoading}
+                        onRead={selectNoteForReading}
+                        onEdit={selectNoteForEditing}
+                        onToggleFavorite={toggleFavorite}
+                        onDelete={deleteNote}
+                        onRestore={restoreNote}
+                        onPermanentlyDelete={permanentlyDeleteNote}
+                      />
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      {categoryStats.map((cat) => (
+                        <button
+                          key={cat.name}
+                          onClick={() => setSelectedCategory(cat.name)}
+                          className="group flex flex-col items-start rounded-xl border border-border/50 bg-card p-5 text-left transition-all duration-200 hover:border-border hover:shadow-lg hover:shadow-black/5"
+                        >
+                          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                            <Folder className="h-5 w-5" />
+                          </div>
+                          <h3 className="mb-1 w-full truncate text-base font-medium text-foreground">
+                            {cat.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {cat.count} {cat.count === 1 ? "note" : "notes"}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
