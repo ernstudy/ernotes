@@ -10,7 +10,20 @@ import { NotesGrid } from "./notes-grid";
 import { CreateNoteForm } from "./create-note-form";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus, Folder, ArrowLeft, ArrowRight } from "lucide-react";
+import { Menu, Plus, Folder, ArrowLeft, ArrowRight, Filter } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface NotesLayoutProps {
   initialViewMode?: ViewMode;
@@ -19,6 +32,15 @@ interface NotesLayoutProps {
 export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [allNotesFilter, setAllNotesFilter] = useState<{
+    category: string | null;
+    favoritesOnly: boolean;
+    sortOrder: "desc" | "asc";
+  }>({
+    category: null,
+    favoritesOnly: false,
+    sortOrder: "desc",
+  });
 
   const {
     notes,
@@ -95,8 +117,6 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
     }
   };
 
-  const displayNotes = currentSection === "home" ? recentNotes.slice(0, 4) : notes;
-
   const categoryStats = useMemo(() => {
     const stats: Record<string, number> = {};
     categories.forEach((c) => {
@@ -116,6 +136,25 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [categories, notes]);
+
+  const allNotesFiltered = useMemo(() => {
+    let filtered = notes;
+    if (allNotesFilter.favoritesOnly) {
+      filtered = filtered.filter((n) => n.is_favorite);
+    }
+    if (allNotesFilter.category) {
+      filtered = filtered.filter((n) => n.category === allNotesFilter.category);
+    }
+    if (allNotesFilter.sortOrder === "asc") {
+      filtered = [...filtered].reverse();
+    }
+    return filtered;
+  }, [notes, allNotesFilter]);
+
+  const displayNotes =
+    currentSection === "home" ? recentNotes.slice(0, 4) :
+    currentSection === "all" ? allNotesFiltered :
+    notes;
 
   const categoryNotes = useMemo(() => {
     if (!selectedCategory) return [];
@@ -186,11 +225,67 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
             />
           ) : (
             <div className="h-full overflow-auto px-6 py-8 lg:px-8">
-              {currentSection === "home" && (
-                <div className="mb-6 flex items-center justify-between gap-4 lg:hidden">
+              {currentSection === "all" && (
+                <div className="mb-6 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <SearchBar value={searchQuery} onChange={setSearchQuery} />
                   </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="shrink-0 gap-2">
+                        <Filter className="h-4 w-4" />
+                        Filter
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuCheckboxItem
+                        checked={allNotesFilter.favoritesOnly}
+                        onCheckedChange={(checked) =>
+                          setAllNotesFilter((p) => ({ ...p, favoritesOnly: !!checked }))
+                        }
+                      >
+                        Favorites Only
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>Categories</DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setAllNotesFilter((p) => ({ ...p, category: null }))
+                            }
+                          >
+                            All Categories
+                          </DropdownMenuItem>
+                          {categoryStats.map((cat) => (
+                            <DropdownMenuCheckboxItem
+                              key={cat.name}
+                              checked={allNotesFilter.category === cat.name}
+                              onCheckedChange={() =>
+                                setAllNotesFilter((p) => ({ ...p, category: cat.name }))
+                              }
+                            >
+                              {cat.name}
+                            </DropdownMenuCheckboxItem>
+                          ))}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={allNotesFilter.sortOrder}
+                        onValueChange={(val) =>
+                          setAllNotesFilter((p) => ({ ...p, sortOrder: val as "asc" | "desc" }))
+                        }
+                      >
+                        <DropdownMenuRadioItem value="desc">
+                          Most Recent
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="asc">
+                          Oldest First
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <Button
                     onClick={showCreateForm}
                     className="shrink-0 gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
