@@ -3,7 +3,16 @@
 import { NoteSection } from "@/lib/types";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
-import { FileText, Plus, Star, Trash2, X, LogOut, Home, Folder } from "lucide-react";
+import {
+  FileText,
+  Plus,
+  Star,
+  Trash2,
+  X,
+  LogOut,
+  Home,
+  Folder,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -65,7 +74,7 @@ export function Sidebar({
               <FileText className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="text-lg font-semibold text-sidebar-foreground">
-              Ernote
+              ERNotes
             </span>
           </div>
           <Button

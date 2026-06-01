@@ -203,7 +203,7 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
               <FileText className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="text-lg font-semibold text-foreground">
-              Ernote
+              ERNotes
             </span>
           </div>
         </div>

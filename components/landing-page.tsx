@@ -14,15 +14,19 @@ export function LandingPage({ onShowCreateNote }: LandingPageProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [pendingAction, setPendingAction] = useState<"create" | null>(null);
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
   // After authentication, trigger pending action
   useEffect(() => {
-    if (isAuthenticated && pendingAction === "create" && onShowCreateNote) {
+    if (
+      user?.isAuthenticated &&
+      pendingAction === "create" &&
+      onShowCreateNote
+    ) {
       onShowCreateNote();
       setPendingAction(null);
     }
-  }, [isAuthenticated, pendingAction, onShowCreateNote]);
+  }, [user?.isAuthenticated, pendingAction, onShowCreateNote]);
 
   const openAuthModal = (mode: "login" | "register", action?: "create") => {
     setAuthMode(mode);
@@ -35,7 +39,7 @@ export function LandingPage({ onShowCreateNote }: LandingPageProps) {
 
   const handleCloseModal = () => {
     setIsAuthModalOpen(false);
-    if (!isAuthenticated) {
+    if (!user?.isAuthenticated) {
       setPendingAction(null);
     }
   };
@@ -50,7 +54,7 @@ export function LandingPage({ onShowCreateNote }: LandingPageProps) {
               <FileText className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="text-xl font-semibold text-foreground">
-              Ernote
+              ERNotes
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -75,13 +79,15 @@ export function LandingPage({ onShowCreateNote }: LandingPageProps) {
       <main className="flex flex-1 flex-col items-center justify-center px-6">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-            Your thoughts,
+            Capture ideas,
             <br />
-            <span className="text-primary">beautifully organized</span>
+            <span className="text-primary">stay organized.</span>
           </h1>
           <p className="mt-6 text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            Fast, distraction-free note-taking for the modern mind. Capture
-            ideas instantly, find them effortlessly, and focus on what matters.
+            Free and fast note-taking designed for clarity, focus, and
+            organization. Capture thoughts, ideas, and important information in
+            seconds, keep everything neatly organized, and find what you need
+            whenever you need it.
           </p>
           <div className="mt-10">
             <Button
@@ -98,7 +104,13 @@ export function LandingPage({ onShowCreateNote }: LandingPageProps) {
       {/* Footer */}
       <footer className="border-t border-border/50 py-6">
         <div className="mx-auto max-w-6xl px-6 text-center text-sm text-muted-foreground">
-          Built for clarity. Designed for speed.
+          &copy; {new Date().getFullYear()} ERNotes. Developed by{" "}
+          <a
+            href="https://ernstudy.com"
+            className="text-segundary font-bold hover:underline"
+          >
+            Ernstudy
+          </a>
         </div>
       </footer>
 
