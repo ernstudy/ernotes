@@ -33,6 +33,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 interface NotesLayoutProps {
   initialViewMode?: ViewMode;
@@ -200,7 +201,12 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
           </Button>
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <FileText className="h-4 w-4 text-primary-foreground" />
+              <Image
+                src="/android-chrome-192x192.png"
+                alt="ERNotes"
+                width={32}
+                height={32}
+              />
             </div>
             <span className="text-lg font-semibold text-foreground">
               ERNotes

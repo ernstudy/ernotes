@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
+import Image from "next/image";
 
 interface SidebarProps {
   currentSection: NoteSection;
@@ -71,7 +72,12 @@ export function Sidebar({
         <div className="flex items-center justify-between border-b border-sidebar-border px-4 py-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <FileText className="h-4 w-4 text-primary-foreground" />
+              <Image
+                src="/android-chrome-192x192.png"
+                alt="ERNotes"
+                width={32}
+                height={32}
+              />
             </div>
             <span className="text-lg font-semibold text-sidebar-foreground">
               ERNotes
