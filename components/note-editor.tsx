@@ -55,8 +55,12 @@ export function NoteEditor({
   }, [note?.id]);
 
   // Autosave with debounce
-  const handleSave = (newTitle: string, newContent: string, newCategory: string) => {
-    if (!note || note.isDeleted) return;
+  const handleSave = (
+    newTitle: string,
+    newContent: string,
+    newCategory: string,
+  ) => {
+    if (!note || note.is_archived) return;
 
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
@@ -64,13 +68,17 @@ export function NoteEditor({
 
     setIsSaving(true);
     saveTimeoutRef.current = setTimeout(() => {
-      onUpdateNote(note.id, { title: newTitle, content: newContent, category: newCategory });
+      onUpdateNote(note.id, {
+        title: newTitle,
+        content: newContent,
+        category: newCategory,
+      });
       setIsSaving(false);
     }, 500);
   };
 
   const handleManualSave = () => {
-    if (!note || note.isDeleted) return;
+    if (!note || note.is_archived) return;
 
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
@@ -193,11 +201,11 @@ export function NoteEditor({
             onClick={() => onToggleFavorite(note.id)}
             className={cn(
               "text-muted-foreground hover:text-foreground",
-              note.isFavorite && "text-primary hover:text-primary"
+              note.is_favorite && "text-primary hover:text-primary",
             )}
           >
             <Star
-              className={cn("h-4 w-4", note.isFavorite && "fill-current")}
+              className={cn("h-4 w-4", note.is_favorite && "fill-current")}
             />
           </Button>
           <Button
@@ -222,7 +230,7 @@ export function NoteEditor({
             placeholder="Untitled"
             className="mb-4 w-full border-0 bg-transparent text-3xl font-semibold text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
           />
-          
+
           <div className="mb-6">
             <Label className="mb-2 block text-sm text-muted-foreground">
               Category

@@ -64,11 +64,11 @@ export function NoteReader({
             onClick={() => onToggleFavorite(note.id)}
             className={cn(
               "text-muted-foreground hover:text-foreground",
-              note.isFavorite && "text-primary hover:text-primary"
+              note.is_favorite && "text-primary hover:text-primary",
             )}
           >
             <Star
-              className={cn("h-4 w-4", note.isFavorite && "fill-current")}
+              className={cn("h-4 w-4", note.is_favorite && "fill-current")}
             />
           </Button>
           <Button
@@ -88,7 +88,7 @@ export function NoteReader({
           <h1 className="mb-4 text-3xl font-semibold text-foreground">
             {note.title || "Untitled"}
           </h1>
-          
+
           {note.category && (
             <div className="mb-6">
               <Badge variant="secondary" className="text-sm font-normal">
@@ -103,7 +103,7 @@ export function NoteReader({
 
           <div className="mt-8 pt-6 border-t border-border/30">
             <p className="text-sm text-muted-foreground">
-              Last updated: {formatDate(note.updatedAt)}
+              Last updated: {formatDate(note.updated_at)}
             </p>
           </div>
         </div>

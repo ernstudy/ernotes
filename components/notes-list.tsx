@@ -21,10 +21,7 @@ export function NotesList({
     return (
       <div className="flex flex-col gap-2 p-2">
         {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="animate-pulse rounded-lg bg-secondary/50 p-3"
-          >
+          <div key={i} className="animate-pulse rounded-lg bg-secondary/50 p-3">
             <div className="mb-2 h-4 w-3/4 rounded bg-muted" />
             <div className="h-3 w-1/2 rounded bg-muted" />
           </div>
@@ -49,9 +46,7 @@ export function NotesList({
           onClick={() => onSelectNote(note.id)}
           className={cn(
             "group flex flex-col items-start gap-1 rounded-lg px-3 py-2.5 text-left transition-all duration-150",
-            selectedNoteId === note.id
-              ? "bg-primary/10"
-              : "hover:bg-secondary"
+            selectedNoteId === note.id ? "bg-primary/10" : "hover:bg-secondary",
           )}
         >
           <div className="flex w-full items-center justify-between gap-2">
@@ -60,17 +55,17 @@ export function NotesList({
                 "line-clamp-1 text-sm font-medium",
                 selectedNoteId === note.id
                   ? "text-foreground"
-                  : "text-foreground/90"
+                  : "text-foreground/90",
               )}
             >
               {note.title || "Untitled"}
             </span>
-            {note.isFavorite && !note.isDeleted && (
+            {note.is_favorite && !note.is_archived && (
               <Star className="h-3 w-3 shrink-0 fill-primary text-primary" />
             )}
           </div>
           <span className="line-clamp-1 text-xs text-muted-foreground">
-            {formatDate(note.updatedAt)}
+            {formatDate(note.updated_at)}
           </span>
         </button>
       ))}

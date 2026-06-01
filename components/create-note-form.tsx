@@ -53,7 +53,9 @@ export function CreateNoteForm({
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <span className="text-lg font-medium text-foreground">Create Note</span>
+          <span className="text-lg font-medium text-foreground">
+            Create Note
+          </span>
         </div>
         <Button
           onClick={handleSave}
