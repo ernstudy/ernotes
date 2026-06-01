@@ -165,7 +165,7 @@ function NoteCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100"
+                className="h-8 w-8 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 data-[state=open]:opacity-100"
               >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
