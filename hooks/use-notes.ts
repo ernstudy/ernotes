@@ -103,7 +103,7 @@ export function useNotes() {
   const updateNote = (noteId: string, data: Partial<Note>) => {
     // store updated note temporarily then save to api when going back to dashboard
     setUpdatedNoteForApi((prev) => ({ ...prev, ...data }));
-    setUpdatedNoteIdForApi((prevId) => (prevId === null ? noteId : prevId));
+    setUpdatedNoteIdForApi(() => (noteId ? noteId : null));
 
     // update note in ui immediately for better user experience
     const tempNotes = notes.map((note) =>
@@ -198,13 +198,13 @@ export function useNotes() {
     setSelectedNoteId(null);
   }, []);
 
-  const showDashboard = useCallback(async () => {
+  const showDashboard = async () => {
     setViewMode("list");
     setSelectedNoteId(null);
 
     // save updated note to api when going back to dashboard
     await saveUpdatedNoteToApi();
-  }, []);
+  };
 
   return {
     notes: filteredNotes,
