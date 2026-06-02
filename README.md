@@ -40,5 +40,5 @@ ERNotes is a full-stack web application for personal note management. It allows 
 
 ## 🔗 Links
 
-- Live project: https://ernotes.vercel.com
+- Live project: https://ernotes.vercel.app
 - Backend repository: https://github.com/ernstudy/ernotes-api
