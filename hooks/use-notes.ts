@@ -134,6 +134,8 @@ export function useNotes() {
     );
 
     setNotes(tempNotes);
+
+    showDashboard();
   };
 
   // restore note - remove from trash
