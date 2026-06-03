@@ -174,6 +174,12 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
     return notes.filter((n) => n.category === selectedCategory);
   }, [notes, selectedCategory]);
 
+  const showMobileAddButton =
+    currentSection === "home" &&
+    notes.length > 0 &&
+    !isMobileSidebarOpen &&
+    viewMode === "list";
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -432,6 +438,17 @@ export function NotesLayout({ initialViewMode = "list" }: NotesLayoutProps) {
             </div>
           )}
         </div>
+        {showMobileAddButton && (
+          <div className="lg:hidden fixed right-4 bottom-6 z-30">
+            <Button
+              className="inline-flex w-auto max-w-max items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm text-primary-foreground hover:bg-primary/90 shadow-lg shadow-black/10"
+              onClick={showCreateForm}
+            >
+              <Plus className="h-4 w-4" />
+              New Note
+            </Button>
+          </div>
+        )}
       </main>
     </div>
   );
