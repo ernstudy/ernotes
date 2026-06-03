@@ -11,6 +11,7 @@ import { NotesGrid } from "./notes-grid";
 import { CreateNoteForm } from "./create-note-form";
 import { SearchBar } from "./search-bar";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Menu,
   Plus,

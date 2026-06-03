@@ -34,10 +34,16 @@ export function useNotes() {
   );
 
   const renderNotes = async () => {
-    const res = await getNotesApi(token);
-    const allNotes = await res.notes;
+    setIsLoading(true);
 
-    setNotes(allNotes);
+    try {
+      const res = await getNotesApi(token);
+      const allNotes = await res.notes;
+
+      setNotes(allNotes);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
