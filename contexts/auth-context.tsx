@@ -22,14 +22,14 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
-  loading: boolean;
+  isAuthloading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isAuthloading, setIsAuthloading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -37,14 +37,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!token || token == undefined) {
         setUser(null);
-        setLoading(false);
+        setIsAuthloading(false);
         return;
       }
 
       const data = await getUser(token);
 
       setUser(data.user);
-      setLoading(false);
+      setIsAuthloading(false);
     };
 
     loadUser();
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        loading,
+        isAuthloading,
         user,
         login,
         register,
